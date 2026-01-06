@@ -1,0 +1,14 @@
+{
+  "events": [
+    {
+      "id": "blusukan-jan-2026",
+      "name": "Blusukan Challenge",
+      "description": "Virtual Run Challenge - Lari 300km dalam 1 bulan!",
+      "startDate": "2026-01-01",
+      "endDate": "2026-01-31",
+      "targetDistance": 300,
+      "status": "active",
+      "createdAt": "2026-01-01T00:00:00.000Z"
+    }
+  ]
+}

@@ -1,103 +1,113 @@
-import Image from "next/image";
+'use client';
+
+import Image from 'next/image';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const stravaUriClub = `https://www.strava.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID}&response_type=code&redirect_uri=${process.env.NEXT_PUBLIC_STRAVA_REDIRECT_URI}&scope=read,activity:read&approval_prompt=auto`;
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+  const handleResetLocalStorage = () => {
+    localStorage.removeItem('stravaAccessToken');
+    localStorage.removeItem('athlete');
+  };
+
+  return (
+    <div className="container-app bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex flex-col">
+      {/* Hero Section */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 py-12">
+        {/* Logo */}
+        <div className="mb-8 animate-fade-in">
+          <div className="relative">
+            <div className="absolute inset-0 blur-2xl bg-orange-500/30 rounded-full"></div>
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+              src="/Logo blusukan-01.jpg"
+              alt="Blusukan Logo"
+              width={140}
+              height={140}
+              className="rounded-full relative z-10 border-4 border-orange-500/50 shadow-2xl"
+              priority
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
+          </div>
+        </div>
+
+        {/* Title */}
+        <div className="text-center mb-10 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          <h1 className="text-4xl font-bold text-white mb-3 tracking-tight">
+            Virtual Run
+            <span className="block text-orange-500">Blusukan</span>
+          </h1>
+          <p className="text-slate-400 text-lg max-w-xs mx-auto">
+            Join the challenge and track your running journey with Strava
+          </p>
+        </div>
+
+        {/* Features */}
+        <div className="w-full max-w-sm mb-10 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-10 h-10 bg-orange-500/20 rounded-xl flex items-center justify-center text-xl">
+                🏃
+              </div>
+              <div>
+                <h3 className="text-white font-semibold">Track Progress</h3>
+                <p className="text-slate-400 text-sm">Monitor your daily runs</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center text-xl">
+                🏆
+              </div>
+              <div>
+                <h3 className="text-white font-semibold">Leaderboard</h3>
+                <p className="text-slate-400 text-sm">Compete with friends</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center text-xl">
+                🎯
+              </div>
+              <div>
+                <h3 className="text-white font-semibold">Achieve Goals</h3>
+                <p className="text-slate-400 text-sm">Complete 300km challenge</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Strava Login Button */}
+        <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <a href={stravaUriClub} onClick={handleResetLocalStorage}>
+            <button className="bg-[#fc4c02] hover:bg-[#e64500] text-white font-bold py-4 px-8 rounded-2xl cursor-pointer transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-orange-500/25 flex items-center gap-3">
+              <svg
+                className="w-6 h-6"
+                viewBox="0 0 384 512"
+                fill="currentColor"
+              >
+                <path d="M158.4 0L7 292h89.2l62.2-116.1L220.1 292h88.5zm62.2 296.5l-36.5 68.5h-73l109.5 147 109.5-147h-72.9l-36.6-68.5z" />
+              </svg>
+              Connect with Strava
+            </button>
           </a>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* Manual Registration Link */}
+        <div className="animate-fade-in mt-4" style={{ animationDelay: '0.4s' }}>
+          <a href="/register" className="text-slate-400 hover:text-white text-sm transition-colors">
+            Tidak punya Strava? <span className="underline">Daftar Manual</span>
+          </a>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="py-6 text-center border-t border-white/10">
+        <p className="text-slate-500 text-sm mb-2">
+          © 2025 Blusukan Virtual Run
+        </p>
+        <div className="flex justify-center gap-4 text-xs text-slate-600">
+          <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
+          <span>•</span>
+          <a href="/terms" className="hover:text-white transition-colors">Terms of Service</a>
+        </div>
+      </div>
     </div>
   );
 }

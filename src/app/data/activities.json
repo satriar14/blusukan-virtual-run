@@ -1,0 +1,18 @@
+{
+  "activities": [
+    {
+      "participantId": "participant-1767682334510",
+      "eventId": "blusukan-jan-2026",
+      "stravaActivityId": 16930449644,
+      "name": "Morning Run",
+      "distance": 21313.2,
+      "movingTime": 9605,
+      "startDate": "2026-01-04T02:38:00Z",
+      "type": "Run",
+      "isValid": true,
+      "validationNote": "Valid activity.",
+      "id": "activity-1767682340861-8c33myhxq",
+      "syncedAt": "2026-01-06T06:52:20.861Z"
+    }
+  ]
+}

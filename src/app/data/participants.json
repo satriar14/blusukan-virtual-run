@@ -1,0 +1,25 @@
+{
+  "participants": [
+    {
+      "eventId": "blusukan-jan-2026",
+      "athleteId": 119681876,
+      "athleteName": "Satria Ramadhan",
+      "athleteProfile": "https://dgalywyr863hv.cloudfront.net/pictures/athletes/119681876/27948147/7/medium.jpg",
+      "accessToken": "2d81df36bc822ffd0be5f858a35e9abcb9af58c4",
+      "refreshToken": "b766c1100a731922ccc3bbea344558df0bd2ecd4",
+      "expiresAt": 1767701833,
+      "id": "participant-1767682334510",
+      "registeredAt": "2026-01-06T06:52:14.510Z"
+    },
+    {
+      "eventId": "blusukan-jan-2026",
+      "athleteId": 1767683241216,
+      "athleteName": "Satria",
+      "accessToken": "",
+      "refreshToken": "",
+      "expiresAt": 0,
+      "id": "participant-1767683233238",
+      "registeredAt": "2026-01-06T07:07:13.238Z"
+    }
+  ]
+}
