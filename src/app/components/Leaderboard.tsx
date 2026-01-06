@@ -1,7 +1,15 @@
 'use client';
 
-import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
-import { Table, TableProps } from 'antd';
+import { Badge } from '@/components/ui/badge';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
+import { CheckCircle, XCircle } from 'lucide-react';
 
 type LeaderboardEntry = {
   rank: number;
@@ -68,62 +76,6 @@ const Leaderboard = ({ entries, currentAthleteId, event }: Props) => {
     return `${mins}:${secs.toString().padStart(2, '0')}/km`;
   };
 
-  const columns: TableProps<LeaderboardEntry>['columns'] = [
-    {
-      title: '#',
-      key: 'rank',
-      align: 'center',
-      width: 50,
-      render: (_, record) => getRankBadge(record.rank),
-    },
-    {
-      title: 'Athlete',
-      key: 'name',
-      render: (_, record) => {
-        const isCurrentUser = record.athleteId === currentAthleteId;
-        return (
-          <div className={`py-1 ${isCurrentUser ? 'bg-orange-50 -mx-4 px-4 rounded' : ''}`}>
-            <div className="flex items-center gap-2">
-              <span className={`font-medium ${isCurrentUser ? 'text-orange-600' : 'text-slate-800'}`}>
-                {record.athleteName}
-              </span>
-              {isCurrentUser && <span className="text-xs text-orange-500">(You)</span>}
-            </div>
-            <div className="text-xs text-slate-400 flex items-center gap-2">
-              <span className="flex items-center gap-1">
-                <CheckCircleOutlined className="text-green-500" />
-                {record.validActivities}
-              </span>
-              {record.invalidActivities > 0 && (
-                <span className="flex items-center gap-1">
-                  <CloseCircleOutlined className="text-red-400" />
-                  {record.invalidActivities}
-                </span>
-              )}
-            </div>
-          </div>
-        );
-      },
-    },
-    {
-      align: 'right',
-      title: 'Distance',
-      key: 'totalDistance',
-      width: 90,
-      render: (_, record) => (
-        <div>
-          <div className="font-bold text-blue-600">
-            {(record.totalDistance / 1000).toFixed(2)} km
-          </div>
-          <div className="text-xs text-slate-400">
-            {formatPace(record.pace)}
-          </div>
-        </div>
-      ),
-    },
-  ];
-
-  // Format date range
   const dateRangeText = event
     ? `${new Date(event.startDate).getDate()} - ${new Date(event.endDate).getDate()} ${new Date(event.startDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`
     : '';
@@ -138,16 +90,69 @@ const Leaderboard = ({ entries, currentAthleteId, event }: Props) => {
           {dateRangeText} • {entries.length} participants
         </p>
       </div>
-      <Table
-        columns={columns}
-        dataSource={entries}
-        rowKey={(record) => record.participantId}
-        pagination={false}
-        locale={{ emptyText: 'No participants yet. Be the first to join!' }}
-        rowClassName={(record) => 
-          record.athleteId === currentAthleteId ? 'bg-orange-50' : ''
-        }
-      />
+      
+      {entries.length === 0 ? (
+        <div className="p-8 text-center text-slate-500">
+          No participants yet. Be the first to join!
+        </div>
+      ) : (
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-slate-50">
+              <TableHead className="w-[60px] text-center">#</TableHead>
+              <TableHead>Athlete</TableHead>
+              <TableHead className="text-right w-[100px]">Distance</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {entries.map((entry) => {
+              const isCurrentUser = entry.athleteId === currentAthleteId;
+              return (
+                <TableRow 
+                  key={entry.participantId}
+                  className={isCurrentUser ? 'bg-orange-50' : ''}
+                >
+                  <TableCell className="text-center">
+                    {getRankBadge(entry.rank)}
+                  </TableCell>
+                  <TableCell>
+                    <div className={isCurrentUser ? 'text-orange-600' : ''}>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{entry.athleteName}</span>
+                        {isCurrentUser && (
+                          <Badge variant="secondary" className="text-xs bg-orange-100 text-orange-600">
+                            You
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="text-xs text-slate-400 flex items-center gap-2 mt-1">
+                        <span className="flex items-center gap-1">
+                          <CheckCircle className="w-3 h-3 text-green-500" />
+                          {entry.validActivities}
+                        </span>
+                        {entry.invalidActivities > 0 && (
+                          <span className="flex items-center gap-1">
+                            <XCircle className="w-3 h-3 text-red-400" />
+                            {entry.invalidActivities}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="font-bold text-blue-600">
+                      {(entry.totalDistance / 1000).toFixed(2)} km
+                    </div>
+                    <div className="text-xs text-slate-400">
+                      {formatPace(entry.pace)}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      )}
     </div>
   );
 };

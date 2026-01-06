@@ -1,13 +1,13 @@
 'use client';
 
-import { Progress } from 'antd';
+import { Progress } from '@/components/ui/progress';
 
 type Props = {
-  totalDistance: number; // in meters
-  totalTime: number; // in seconds
+  totalDistance: number;
+  totalTime: number;
   validActivities: number;
   invalidActivities: number;
-  targetDistance: number; // in km
+  targetDistance: number;
   endDate?: string;
 };
 
@@ -22,7 +22,6 @@ const ResultActivities = ({
   const distanceKm = totalDistance / 1000;
   const progressPercent = Math.min((distanceKm / targetDistance) * 100, 100);
   
-  // Calculate days remaining
   const now = new Date();
   const end = endDate ? new Date(endDate) : new Date(now.getFullYear(), now.getMonth() + 1, 0);
   const daysRemaining = Math.max(0, Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
@@ -31,9 +30,7 @@ const ResultActivities = ({
     const hours = Math.floor(seconds / 3600);
     const mins = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    return `${hours.toString().padStart(2, '0')}:${mins
-      .toString()
-      .padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
   const formatPace = (distance: number, time: number) => {
@@ -86,16 +83,7 @@ const ResultActivities = ({
           <span>{distanceKm.toFixed(2)} km</span>
           <span>{targetDistance} km</span>
         </div>
-        <Progress
-          percent={Number(progressPercent.toFixed(1))}
-          showInfo={false}
-          strokeColor={{
-            '0%': '#f97316',
-            '100%': '#ea580c',
-          }}
-          trailColor="#e2e8f0"
-          className="!mb-0"
-        />
+        <Progress value={progressPercent} className="h-3" />
         <div className="text-center mt-2">
           <span className="text-lg font-bold text-orange-600">
             {progressPercent.toFixed(1)}%

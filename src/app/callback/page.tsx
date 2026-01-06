@@ -1,10 +1,11 @@
 'use client';
 
-import { CheckCircleOutlined, LogoutOutlined, ReloadOutlined } from '@ant-design/icons';
-import '@ant-design/v5-patch-for-react-19';
-import { Button, Spin, message } from 'antd';
+import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
+import { CheckCircle, LogOut, RotateCw } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import Leaderboard from '../components/Leaderboard';
 import ResultActivities from '../components/ResultActivities';
 import { getAccessToken } from '../lib/strava';
@@ -54,7 +55,6 @@ export default function Callback() {
   const [isRegistered, setIsRegistered] = useState(false);
   const [syncResult, setSyncResult] = useState<any>(null);
 
-  // Initialize from localStorage and URL code
   useEffect(() => {
     const initializeAuth = async () => {
       const code = new URLSearchParams(window.location.search).get('code');
@@ -84,7 +84,6 @@ export default function Callback() {
         setIsRegistered(true);
       }
 
-      // Exchange code for token if new login
       if (code && !localAccessToken) {
         try {
           const data = await getAccessToken(code);
@@ -92,16 +91,12 @@ export default function Callback() {
             setAthlete(data.athlete);
             setAccessToken(data.access_token);
             localStorage.setItem('athlete', JSON.stringify(data.athlete));
-            
-            // Register participant via API
             await registerParticipant(data);
-            
-            // Clean URL after successful auth
             window.history.replaceState({}, document.title, '/callback');
           }
         } catch (e) {
           console.error('Failed to get access token:', e);
-          message.error('Login failed. Please try again.');
+          toast.error('Login failed. Please try again.');
         }
       }
 
@@ -111,14 +106,12 @@ export default function Callback() {
     initializeAuth();
   }, []);
 
-  // Fetch leaderboard when initialized
   useEffect(() => {
     if (!initialLoading) {
       fetchLeaderboard();
     }
   }, [initialLoading]);
 
-  // Register participant via API
   const registerParticipant = async (tokenData: any) => {
     try {
       const res = await fetch('/api/participants', {
@@ -139,14 +132,13 @@ export default function Callback() {
         setParticipantId(data.participant.id);
         setIsRegistered(true);
         localStorage.setItem('participantId', data.participant.id);
-        message.success(data.isNewRegistration ? 'Berhasil terdaftar di event!' : 'Selamat datang kembali!');
+        toast.success(data.isNewRegistration ? 'Berhasil terdaftar di event!' : 'Selamat datang kembali!');
       }
     } catch (e) {
       console.error('Failed to register participant:', e);
     }
   };
 
-  // Fetch leaderboard from API
   const fetchLeaderboard = async () => {
     setLoading(true);
     try {
@@ -164,7 +156,6 @@ export default function Callback() {
     }
   };
 
-  // Sync activities from Strava via API
   const syncActivities = async () => {
     if (!athlete) return;
     
@@ -174,24 +165,21 @@ export default function Callback() {
       const res = await fetch('/api/sync', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          athleteId: athlete.id,
-        }),
+        body: JSON.stringify({ athleteId: athlete.id }),
       });
       
       const data = await res.json();
       
       if (data.success) {
         setSyncResult(data.results);
-        message.success(data.message);
-        // Refresh leaderboard
+        toast.success(data.message);
         await fetchLeaderboard();
       } else {
-        message.error(data.error || 'Failed to sync activities');
+        toast.error(data.error || 'Failed to sync activities');
       }
     } catch (e) {
       console.error('Failed to sync activities:', e);
-      message.error('Failed to sync activities');
+      toast.error('Failed to sync activities');
     } finally {
       setSyncing(false);
     }
@@ -204,28 +192,25 @@ export default function Callback() {
     window.location.href = '/';
   };
 
-  // Get current user's stats from leaderboard
   const myStats = leaderboard.find(e => e.athleteId === athlete?.id);
 
-  // Initial loading state
   if (initialLoading) {
     return (
       <div className="container-app bg-slate-100 flex items-center justify-center">
         <div className="text-center">
-          <Spin size="large" />
+          <Spinner className="w-8 h-8 mx-auto" />
           <p className="mt-4 text-slate-600">Loading...</p>
         </div>
       </div>
     );
   }
 
-  // Not authenticated
   if (!athlete) {
     return (
       <div className="container-app bg-slate-100 flex items-center justify-center">
         <div className="text-center">
           <p className="text-slate-600 mb-4">Processing login...</p>
-          <Spin size="large" />
+          <Spinner className="w-8 h-8 mx-auto" />
         </div>
       </div>
     );
@@ -264,7 +249,7 @@ export default function Callback() {
                 {athlete.firstname} {athlete.lastname}
               </h2>
               {isRegistered && (
-                <CheckCircleOutlined className="text-green-500" />
+                <CheckCircle className="w-5 h-5 text-green-500" />
               )}
             </div>
             {isRegistered && (
@@ -282,19 +267,28 @@ export default function Callback() {
 
         <div className="flex gap-3 mt-4">
           <Button
-            className="flex-1 !bg-orange-500 hover:!bg-orange-600 !text-white !font-semibold !h-11 !rounded-xl !border-none"
+            className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold h-11 rounded-xl"
             onClick={syncActivities}
-            loading={syncing}
-            icon={<ReloadOutlined />}
+            disabled={syncing}
           >
-            {syncing ? 'Syncing...' : 'Sync Activities'}
+            {syncing ? (
+              <>
+                <Spinner className="w-4 h-4 mr-2" />
+                Syncing...
+              </>
+            ) : (
+              <>
+                <RotateCw className="w-4 h-4 mr-2" />
+                Sync Activities
+              </>
+            )}
           </Button>
           <Button
-            className="!h-11 !rounded-xl !border-slate-300"
+            variant="outline"
+            className="h-11 rounded-xl"
             onClick={handleLogout}
-            icon={<LogoutOutlined />}
           >
-            Logout
+            <LogOut className="w-4 h-4" />
           </Button>
         </div>
 
@@ -336,15 +330,19 @@ export default function Callback() {
       )}
 
       {/* Leaderboard */}
-      <Spin spinning={loading}>
-        <div className="mt-6">
+      <div className="mt-6">
+        {loading ? (
+          <div className="flex justify-center py-8">
+            <Spinner className="w-8 h-8" />
+          </div>
+        ) : (
           <Leaderboard 
             entries={leaderboard} 
             currentAthleteId={athlete.id}
             event={event}
           />
-        </div>
-      </Spin>
+        )}
+      </div>
 
       {/* Footer */}
       <div className="mt-8 py-4 text-center">

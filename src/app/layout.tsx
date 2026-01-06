@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -15,6 +16,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Blusukan - Virtual Run Challenge",
   description: "Join Blusukan Virtual Run Challenge and track your running progress with Strava integration",
+  icons: {
+    icon: "/Logo blusukan-01.jpg",
+    apple: "/Logo blusukan-01.jpg",
+  },
 };
 
 export default function RootLayout({
@@ -23,11 +28,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         {children}
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   );
